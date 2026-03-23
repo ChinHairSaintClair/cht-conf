@@ -15,6 +15,7 @@ const { removeNoLabelNodes } = require('./handle-no-label-placeholders');
 const { removeExtraRepeatInstance, addRepeatCount } = require('./handle-repeat');
 const { handleDbDocRefs } = require('./handle-db-doc-ref');
 const { handleFormId } = require('./handle-form-id');
+const { handleModuleInserts } = require('./handle-section-inserts');
 
 const domParser = new DOMParser();
 const serializer = new XMLSerializer();
@@ -151,6 +152,7 @@ const fixXml = (path, hiddenFields, transformer, enketo) => {
   }
   const xmlDoc = domParser.parseFromString(xml);
 
+  handleModuleInserts(xmlDoc);
   handleFormId(xmlDoc, path);
   replaceItemSetsWithMedia(xmlDoc);
   replaceBase64ImageDynamicDefaults(xmlDoc);
