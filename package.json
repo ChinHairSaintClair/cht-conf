@@ -47,6 +47,7 @@
     "json-diff": "^1.0.6",
     "json-stringify-safe": "^5.0.1",
     "json2csv": "^5.0.7",
+    "jsonc-parser": "^3.3.1",
     "mime-types": "^3.0.1",
     "minimist": "^1.2.8",
     "mkdirp": "^3.0.1",
@@ -68,6 +69,7 @@
     "terser-webpack-plugin": "^5.3.11",
     "uuid": "^11.1.0",
     "webpack": "^5.102.1",
+    "xlsx": "^0.18.5",
     "xml-formatter": "^3.6.7",
     "xpath": "0.0.34"
   },

@@ -47,7 +47,7 @@ module.exports = async (projectDir, subDirectory, options={}) => {
   const apiVersion = instanceProvided ? await getValidApiVersion() : null;
   let validationSkipped = false;
 
-  const fileNames = argsFormFilter(formsDir, '.xml', options);
+  const fileNames = argsFormFilter(formsDir, ['.xml'], options);
 
   let errorFound = false;
   for(const fileName of fileNames) {

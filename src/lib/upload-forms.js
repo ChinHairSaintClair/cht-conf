@@ -15,14 +15,14 @@ const {
 
 const SUPPORTED_PROPERTIES = ['context', 'icon', 'title', 'xml2sms', 'subject_key', 'hidden_fields'];
 const CONTACT_DUPLICATE_CHECK_PROPERTY = 'duplicate_check';
-const FORM_EXTENSTION = '.xml';
+const FORM_EXTENSION = '.xml';
 const FORM_PROPERTIES_EXTENSION = '.properties.json';
 const FORM_MEDIA_MATCHER = /(.+)-media$/;
-const SUPPORTED_EXTENSIONS = [FORM_EXTENSTION, FORM_PROPERTIES_EXTENSION];
+const SUPPORTED_EXTENSIONS = [FORM_EXTENSION, FORM_PROPERTIES_EXTENSION];
 
 const formFileMatcher = (fileName) => {
-  if (fileName.endsWith(FORM_EXTENSTION)) {
-    return fileName.slice(0, fileName.length - FORM_EXTENSTION.length);
+  if (fileName.endsWith(FORM_EXTENSION)) {
+    return fileName.slice(0, fileName.length - FORM_EXTENSION.length);
   }
   if (fileName.endsWith(FORM_PROPERTIES_EXTENSION)) {
     return fileName.slice(0, fileName.length - FORM_PROPERTIES_EXTENSION.length);
@@ -54,7 +54,7 @@ const execute = async (projectDir, subDirectory, options) => {
     PROPERTIES.push(CONTACT_DUPLICATE_CHECK_PROPERTY);
   }
 
-  const fileNames = argsFormFilter(formsDir, FORM_EXTENSTION, options);
+  const fileNames = argsFormFilter(formsDir, [FORM_EXTENSION], options);
   for (const fileName of fileNames) {
     log.info(`Preparing form for upload: ${fileName}…`);
 

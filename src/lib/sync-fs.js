@@ -6,6 +6,7 @@ const path = require('path');
 const trace = require('../lib/log').trace;
 const userPrompt = require('../lib/user-prompt');
 const warn = require('../lib/log').warn;
+const { parse } = require('jsonc-parser');
 
 function read(path) {
   try {
@@ -30,6 +31,15 @@ function readCsv(path) {
 function readJson(path) {
   try {
     return JSON.parse(read(path));
+  } catch(e) {
+    warn(`Error parsing JSON in: ${path}`);
+    throw e;
+  }
+}
+
+function readJsonc(path) {
+  try {
+    return parse(read(path));
   } catch(e) {
     warn(`Error parsing JSON in: ${path}`);
     throw e;
@@ -122,6 +132,7 @@ module.exports = {
   readBinary: path => fs.readFileSync(path),
   readCsv,
   readJson,
+  readJsonc,
   recurseFiles,
   deleteFilesInFolder: folderPath => recurseFiles(folderPath).forEach(filePath => fs.unlinkSync(filePath)),
   readdir: fs.readdirSync,

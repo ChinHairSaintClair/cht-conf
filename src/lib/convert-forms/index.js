@@ -15,6 +15,7 @@ const { removeNoLabelNodes } = require('./handle-no-label-placeholders');
 const { removeExtraRepeatInstance, addRepeatCount } = require('./handle-repeat');
 const { handleDbDocRefs } = require('./handle-db-doc-ref');
 const { handleFormId } = require('./handle-form-id');
+const { handleJSONCFormConversion } = require('./handle-jsonc-form-translation');
 
 const domParser = new DOMParser();
 const serializer = new XMLSerializer();
@@ -30,6 +31,14 @@ const formFileMatcher = (fileName) => {
   return null;
 };
 
+const FORM_EXTENSION_LAYER = '.jsonc';
+const formFileLayerMatcher = (fileName) => {
+  if(fileName.endsWith(FORM_EXTENSION_LAYER)){
+    return fileName.slice(0, fileName.length - FORM_EXTENSION_LAYER.length);
+  }
+  return null;
+};
+
 const execute = async (projectDir, subDirectory, options = {}) => {
   const formsDir = getFormDir(projectDir, subDirectory);
 
@@ -38,11 +47,23 @@ const execute = async (projectDir, subDirectory, options = {}) => {
     return;
   }
 
-  const filesToConvert = argsFormFilter(formsDir, FORM_EXTENSION, options)
-    .filter(name => formFileMatcher(name));
+  const filesToConvert = argsFormFilter(formsDir, [FORM_EXTENSION, FORM_EXTENSION_LAYER], options)
+    .map(name => {
+      const xlsxForm = formFileMatcher(name);
+      if(xlsxForm){
+        return [xlsxForm, FORM_EXTENSION];
+      }
+      const jsoncForm = formFileLayerMatcher(name);
+      if(jsoncForm){
+        return [jsoncForm, FORM_EXTENSION_LAYER];
+      }
+    })
+    .filter(Boolean); // Remove nulls
 
-  for (const xls of filesToConvert) {
-    const sourcePath = `${formsDir}/${xls}`;
+  for (const [form, extension] of filesToConvert) {
+    const sourcePath = extension === FORM_EXTENSION_LAYER ? 
+      handleJSONCFormConversion(formsDir, form, FORM_EXTENSION_LAYER, FORM_EXTENSION) : 
+      `${formsDir}/${form + extension}`;
     const formPathNoExt = fs.withoutExtension(sourcePath);
     const xmlSwpPath = `${formPathNoExt}.xml.swp`;
     const targetPath = `${formPathNoExt}.xml`;
@@ -51,7 +72,7 @@ const execute = async (projectDir, subDirectory, options = {}) => {
     nodeFs.rmSync(targetPath, { force: true });
 
     try {
-      await xls2xform(escapeWhitespacesInPath(sourcePath), escapeWhitespacesInPath(xmlSwpPath), xls);
+      await xls2xform(escapeWhitespacesInPath(sourcePath), escapeWhitespacesInPath(xmlSwpPath), form);
       const hiddenFields = await getHiddenFields(`${fs.withoutExtension(sourcePath)}.properties.json`);
       fixXml(xmlSwpPath, hiddenFields, options.transformer, options.enketo);
     } catch (e) {

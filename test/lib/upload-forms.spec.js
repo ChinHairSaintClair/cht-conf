@@ -28,7 +28,8 @@ describe('upload-forms', () => {
     return uploadForms.__with__({ insertOrReplace, validateForms })(async () => {
       await uploadForms.execute(`${BASE_DIR}/no-instance-id`, FORMS_SUBDIR, { forms: ['dne'] });
       expect(insertOrReplace.called).to.be.false;
-      expect(logWarn.args[0][0]).to.equal('No matches found for files matching form filter: dne.xml');
+      expect(logWarn.args[0][0]).to.equal('No files matching the allowed '+
+        'forms were found. Looked for: dne with extension(s): .xml');
     });
   });
 
